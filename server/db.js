@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '', // Update if you set a password in XAMPP
+    password: '', // Update with your XAMPP MySQL password if set
     database: 'candidate_evaluation'
 });
 

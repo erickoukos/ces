@@ -1,24 +1,26 @@
-Candidate Evaluation System
+# Candidate Evaluation System
 A web-based system to evaluate candidates for digital marketing positions, using MySQL with XAMPP for storage.
 Prerequisites
 
-XAMPP (with MySQL/MariaDB enabled)
-Node.js (v16 or later)
-A web browser
+- XAMPP (with MySQL/MariaDB enabled)
+- Node.js (v16 or later, confirmed v22.14.0)
+- A web browser
 
-Setup Instructions
+## Setup Instructions
 
-Start XAMPP:
+### 1. Start XAMPP:
 
 Open XAMPP Control Panel.
 Start Apache and MySQL modules.
+Verify at http://localhost/phpmyadmin.
 
 
-Create MySQL Database:
+### 2. Create MySQL Database:
 
-Go to http://localhost/phpmyadmin.
-Create a database named candidate_evaluation.
-Run the following SQL in the "SQL" tab:CREATE TABLE candidates (
+In phpMyAdmin, create a database named candidate_evaluation.
+Run:
+
+`CREATE TABLE candidates (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -26,28 +28,30 @@ Run the following SQL in the "SQL" tab:CREATE TABLE candidates (
     scores TEXT NOT NULL,
     comments TEXT,
     average_score DECIMAL(5,2) NOT NULL
-);
+);`
 
 
 
 
-Create Project Directory:
-mkdir candidate-evaluation-system
-cd candidate-evaluation-system
+### 3. Verify Project Directory:
+
+Ensure you’re in C:\xampp\htdocs\ces.
 
 
-Initialize Node.js Project:
-npm init -y
+Update Dependencies:
+
+Save the provided package.json.
+Run: `npm install`
 
 
-Install Dependencies:
-npm install express mysql2
 
 
 Create File Structure:
 
 Create folders: public and server.
-Save the provided files (index.html, styles.css, scripts.js, questions.json, server.js, db.js, package.json, README.md) in their respective locations.
+Save files: index.html, styles.css, scripts.js, questions.json in public/.
+Save files: server.js, db.js in server/.
+Save package.json and README.md in C:\xampp\htdocs\ces.
 
 
 Update MySQL Password (if set):
@@ -71,32 +75,32 @@ Adding Questions and Positions
 
 Add a New Position:
 Edit public/index.html.
-Add an option to the #candidate-position dropdown:<option value="Graphic Designer">Graphic Designer</option>
+Add to #candidate-position dropdown:<option value="Graphic Designer">Graphic Designer</option>
 
 
 
 
 Add Questions:
 Edit public/questions.json.
-Add a new position key with questions:"Graphic Designer": [
-    { "text": "Describe your experience with Adobe Illustrator.", "marks": 4 },
-    { "text": "How do you ensure brand consistency?", "marks": 4 },
-    { "text": "Share a design project example.", "marks": 5 },
-    { "text": "How do you meet campaign deadlines?", "marks": 5 },
-    { "text": "What tools do you use for prototyping?", "marks": 4 },
-    { "text": "How do you handle client feedback?", "marks": 4 },
-    { "text": "Describe a challenging design project.", "marks": 5 },
-    { "text": "How do you stay updated with design trends?", "marks": 4 },
-    { "text": "What is your approach to typography?", "marks": 4 },
-    { "text": "How do you optimize designs for digital?", "marks": 4 }
+Add a new position key:"Graphic Designer": [
+    `{ "text": "Describe your experience with Adobe Illustrator.", "marks": 4 },`
+    `{ "text": "How do you ensure brand consistency?", "marks": 4 },`
+    `{ "text": "Share a design project example.", "marks": 5 },`
+    `{ "text": "How do you meet campaign deadlines?", "marks": 5 },`
+    `{ "text": "What tools do you use for prototyping?", "marks": 4 },`
+    `{ "text": "How do you handle client feedback?", "marks": 4 },`
+    `{ "text": "Describe a challenging design project.", "marks": 5 },`
+    `{ "text": "How do you stay updated with design trends?", "marks": 4 },`
+    `{ "text": "What is your approach to typography?", "marks": 4 },`
+    `{ "text": "How do you optimize designs for digital?", "marks": 4 }`
 ]
 
 
-Ensure total marks (questions + criteria) sum to 50.
+Ensure total marks: 40 (questions) + 10 (criteria) = 50.
 
 
 Restart Server:
-Stop and restart the server (npm start) to load changes.
+Stop and run npm start.
 
 
 
@@ -105,7 +109,7 @@ Database
 Database: candidate_evaluation in MySQL (via XAMPP).
 Table: candidates (id, name, email, position, scores, comments, average_score).
 View Data:
-Use phpMyAdmin (http://localhost/phpmyadmin) to browse the candidates table.
+Use phpMyAdmin (http://localhost/phpmyadmin).
 Or query via Node.js:const db = require('./server/db.js');
 db.query('SELECT * FROM candidates', (err, rows) => console.log(rows));
 
@@ -116,25 +120,37 @@ db.query('SELECT * FROM candidates', (err, rows) => console.log(rows));
 Usage
 
 Evaluate Candidates:
-Enter name, email, and select position.
-Score questions and additional criteria (grooming, etc.).
+Enter name, email, position.
+Score questions (40 marks) and criteria (10 marks).
 Add comments and submit.
 
 
 View Rankings:
-Top three candidates are displayed based on average score.
+Top three candidates displayed by average score.
 
 
 
-Notes
+Troubleshooting
 
-Multiple Interviewers: Each submission is a separate entry. To average scores across interviewers, modify the database to group by email.
-Security: Add authentication for production use.
-Troubleshooting:
-Ensure XAMPP’s MySQL is running.
-Verify MySQL credentials in server.js and db.js.
-Check http://localhost:3000 is accessible.
-Ensure questions.json is valid JSON.
+MySQL Connection Error:
+Verify MySQL is running in XAMPP.
+Check credentials in server.js and db.js.
+Ensure candidate_evaluation database exists.
+
+
+Server Won’t Start:
+Check port 3000: netstat -aon | findstr :3000.
+Change port in server.js if needed (e.g., PORT = 3001).
+
+
+Questions Don’t Load:
+Validate questions.json (use JSON validator).
+Ensure it’s in public/.
+
+
+Page Not Loading:
+Confirm npm start is running.
+Try http://127.0.0.1:3000.
 
 
 
@@ -157,8 +173,4 @@ Add to questions.json:"Graphic Designer": [
 ]
 
 
-Total: 10 questions (8×4 + 2×5 = 40) + criteria (5×2 = 10) = 50 marks.
-
-
 Restart server and test.
-
