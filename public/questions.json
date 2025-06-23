@@ -1,0 +1,30 @@
+{
+    "Photographer": [
+        { "text": "Can you tell us about yourself and your professional journey in photography, videography, and editing?", "marks": 4 },
+        { "text": "Describe your experience using tools like Adobe Photoshop, Lightroom, or Premiere Pro for photo and video editing.", "marks": 4 },
+        { "text": "What specific skills or expertise in camera equipment set you apart as a candidate?", "marks": 4 },
+        { "text": "Share an example of how you used editing software to enhance a photo or video project for a digital marketing campaign.", "marks": 4 },
+        { "text": "How do you develop a creative vision for photo and video content that aligns with a brand’s digital marketing goals?", "marks": 4 },
+        { "text": "Describe your approach to communicating your creative ideas to non-technical team members or clients.", "marks": 4 },
+        { "text": "How do you handle feedback or revisions from a digital marketing team when working on visual content?", "marks": 4 },
+        { "text": "Share an example of a photo or video shoot you planned and executed to meet specific marketing objectives.", "marks": 4 },
+        { "text": "Describe how you collaborate with a digital marketing team to ensure visual content supports campaign goals.", "marks": 5 },
+        { "text": "How do you engage with clients or stakeholders to understand their needs for photo and video content?", "marks": 4 },
+        { "text": "What metrics or feedback do you use to evaluate the success of your visual content in digital marketing campaigns?", "marks": 4 },
+        { "text": "Share a time when client or team feedback led you to adjust a photo or video project. What was the outcome?", "marks": 5 }
+    ],
+    "Digital Marketing Manager": [
+        { "text": "Can you tell us about yourself and your professional journey in digital marketing?", "marks": 4 },
+        { "text": "Describe your experience using digital marketing tools like Google Ads, SEMrush, or HubSpot to drive campaign success.", "marks": 4 },
+        { "text": "What specific skills or expertise in digital marketing tools set you apart as a candidate?", "marks": 4 },
+        { "text": "Share an example of how you used a tool like Mailchimp or Marketo to enhance a marketing campaign’s effectiveness.", "marks": 4 },
+        { "text": "How do you create a digital marketing strategy that aligns with a company’s short-term and long-term goals?", "marks": 4 },
+        { "text": "Describe your approach to communicating complex campaign results to non-technical stakeholders or clients.", "marks": 4 },
+        { "text": "How do you address resistance from team members when implementing a new digital marketing strategy?", "marks": 4 },
+        { "text": "Share an example of using A/B testing or data analysis to optimize a digital marketing campaign’s performance.", "marks": 4 },
+        { "text": "Describe your leadership style and how you foster a collaborative and productive digital marketing team.", "marks": 5 },
+        { "text": "How do you ensure strong client relationships to meet their digital marketing objectives?", "marks": 4 },
+        { "text": "What key performance indicators do you track to measure the success of digital marketing initiatives?", "marks": 4 },
+        { "text": "Share a time when data-driven insights prompted you to pivot a digital marketing strategy. What was the result?", "marks": 5 }
+    ]
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Evaluation System</title>
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="text-center">Candidate Evaluation System</h1>
+
+        <!-- Form for Candidate Details and Scores -->
+        <section class="candidate-details">
+            <h2>Enter Candidate Details</h2>
+            <div class="grid">
+                <input id="candidate-name" type="text" placeholder="Candidate Name" class="input-field">
+                <input id="candidate-email" type="email" placeholder="Candidate Email" class="input-field">
+                <select id="candidate-position" class="input-field">
+                    <option value="" disabled selected>Select Position</option>
+                    <option value="Photographer">Photographer</option>
+                    <option value="Digital Marketing Manager">Digital Marketing Manager</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="questions-scores">
+            <h2>Interview Questions and Scores</h2>
+            <div id="questions-container" class="questions-list"></div>
+            <div id="additional-criteria" class="criteria-list">
+                <div class="criteria-item">
+                    <label>Grooming (2 marks)</label>
+                    <input type="number" min="0" max="2" class="score input-field" data-criteria="grooming" placeholder="Score">
+                </div>
+                <div class="criteria-item">
+                    <label>Presentation (2 marks)</label>
+                    <input type="number" min="0" max="2" class="score input-field" data-criteria="presentation" placeholder="Score">
+                </div>
+                <div class="criteria-item">
+                    <label>Expression (2 marks)</label>
+                    <input type="number" min="0" max="2" class="score input-field" data-criteria="expression" placeholder="Score">
+                </div>
+                <div class="criteria-item">
+                    <label>Passion (2 marks)</label>
+                    <input type="number" min="0" max="2" class="score input-field" data-criteria="passion" placeholder="Score">
+                </div>
+                <div class="criteria-item">
+                    <label>Articulation (2 marks)</label>
+                    <input type="number" min="0" max="2" class="score input-field" data-criteria="articulation" placeholder="Score">
+                </div>
+            </div>
+            <div class="comments-section">
+                <label>Comments</label>
+                <textarea id="comments" class="input-field" placeholder="Enter comments about the candidate"></textarea>
+            </div>
+            <button onclick="submitEvaluation()" class="submit-btn">Submit Evaluation</button>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="results">
+            <h2>Candidate Rankings</h2>
+            <div id="candidate-list" class="candidate-list"></div>
+        </section>
+    </div>
+    <script src="/static/scripts.js"></script>
+</body>
+</html>
