@@ -29,6 +29,7 @@
                 <textarea id="position-qualifications" placeholder="Qualifications" class="input-field"></textarea>
                 <textarea id="position-requirements" placeholder="Requirements" class="input-field"></textarea>
                 <textarea id="position-duties" placeholder="Duties" class="input-field"></textarea>
+                <input id="position-total-marks" type="number" min="10" max="100" placeholder="Total Marks" class="input-field">
                 <button onclick="createPosition()" class="submit-btn">Create Position</button>
             </div>
         </section>
@@ -39,9 +40,10 @@
             <div class="grid">
                 <select id="new-question-position" class="input-field"></select>
                 <input id="new-question-text" type="text" placeholder="Question Text" class="input-field">
-                <input id="new-question-marks" type="number" min="1" max="5" placeholder="Marks (1-5)" class="input-field">
+                <input id="new-question-marks" type="number" min="1" max="10" placeholder="Marks (1-10)" class="input-field">
                 <button onclick="submitQuestion()" class="submit-btn">Add Question</button>
             </div>
+            <div id="marks-warning" style="color: red; display: none;">Total marks exceed the position limit.</div>
         </section>
 
         <!-- Candidate Evaluation Form -->

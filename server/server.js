@@ -28,23 +28,29 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Create position
+// Create position (admin only)
 app.post('/api/positions', (req, res) => {
-    const { title, description, qualifications, requirements, duties } = req.body;
-    if (!title || !description || !qualifications || !requirements || !duties) {
+    const { title, description, qualifications, requirements, duties, totalMarks, email } = req.body;
+    if (!title || !description || !qualifications || !requirements || !duties || !totalMarks || !email) {
         return res.status(400).json({ error: 'All fields are required' });
     }
-    const query = 'INSERT INTO positions (title, description, qualifications, requirements, duties) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [title, description, qualifications, requirements, duties], (err, result) => {
-        if (err) {
-            console.error('Error creating position:', err);
-            return res.status(500).json({ error: 'Failed to create position' });
+    const checkRoleQuery = 'SELECT role FROM users WHERE email = ?';
+    db.query(checkRoleQuery, [email], (err, results) => {
+        if (err || !results.length || results[0].role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
         }
-        res.json({ message: 'Position created', id: result.insertId });
+        const query = 'INSERT INTO positions (title, description, qualifications, requirements, duties, total_marks) VALUES (?, ?, ?, ?, ?, ?)';
+        db.query(query, [title, description, qualifications, requirements, duties, parseInt(totalMarks)], (err, result) => {
+            if (err) {
+                console.error('Error creating position:', err);
+                return res.status(500).json({ error: 'Failed to create position' });
+            }
+            res.json({ message: 'Position created', id: result.insertId });
+        });
     });
 });
 
-// Add question (restricted to admins)
+// Add question (admin only with validation)
 app.post('/api/questions', (req, res) => {
     const { positionId, text, marks, email } = req.body;
     if (!positionId || !text || !marks || !email) {
@@ -55,13 +61,24 @@ app.post('/api/questions', (req, res) => {
         if (err || !results.length || results[0].role !== 'admin') {
             return res.status(403).json({ error: 'Unauthorized' });
         }
-        const query = 'INSERT INTO questions (position_id, text, marks) VALUES (?, ?, ?)';
-        db.query(query, [positionId, text, parseInt(marks)], (err, result) => {
-            if (err) {
-                console.error('Error saving question:', err);
-                return res.status(500).json({ error: 'Failed to save question' });
+        // Check total marks
+        db.query('SELECT total_marks, (SELECT COALESCE(SUM(marks), 0) FROM questions WHERE position_id = ?) as current_total FROM positions WHERE id = ?', [positionId, positionId], (err, rows) => {
+            if (err || !rows.length) {
+                return res.status(500).json({ error: 'Position not found' });
             }
-            res.json({ message: 'Question saved', id: result.insertId });
+            const { total_marks, current_total } = rows[0];
+            const newTotal = current_total + parseInt(marks);
+            if (newTotal > total_marks) {
+                return res.status(400).json({ error: `Total marks (${newTotal}) cannot exceed ${total_marks}` });
+            }
+            const query = 'INSERT INTO questions (position_id, text, marks) VALUES (?, ?, ?)';
+            db.query(query, [positionId, text, parseInt(marks)], (err, result) => {
+                if (err) {
+                    console.error('Error saving question:', err);
+                    return res.status(500).json({ error: 'Failed to save question' });
+                }
+                res.json({ message: 'Question saved', id: result.insertId });
+            });
         });
     });
 });
@@ -80,7 +97,6 @@ db.connect(err => {
     }
     console.log('Connected to MySQL database');
 
-    // Create tables and alter candidates table separately
     db.query(`
         CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -88,9 +104,7 @@ db.connect(err => {
             password VARCHAR(255) NOT NULL,
             role ENUM('admin', 'interviewer') DEFAULT 'interviewer'
         )
-    `, (err) => {
-        if (err) console.error('Error creating users table:', err);
-    });
+    `, (err) => { if (err) console.error('Error creating users table:', err); });
 
     db.query(`
         CREATE TABLE IF NOT EXISTS positions (
@@ -99,11 +113,10 @@ db.connect(err => {
             description TEXT,
             qualifications TEXT,
             requirements TEXT,
-            duties TEXT
+            duties TEXT,
+            total_marks INT NOT NULL DEFAULT 50
         )
-    `, (err) => {
-        if (err) console.error('Error creating positions table:', err);
-    });
+    `, (err) => { if (err) console.error('Error creating positions table:', err); });
 
     db.query(`
         CREATE TABLE IF NOT EXISTS questions (
@@ -113,9 +126,7 @@ db.connect(err => {
             marks INT NOT NULL,
             FOREIGN KEY (position_id) REFERENCES positions(id) ON DELETE CASCADE
         )
-    `, (err) => {
-        if (err) console.error('Error creating questions table:', err);
-    });
+    `, (err) => { if (err) console.error('Error creating questions table:', err); });
 
     db.query(`
         ALTER TABLE candidates
@@ -123,15 +134,15 @@ db.connect(err => {
         DROP COLUMN IF EXISTS position,
         ADD COLUMN IF NOT EXISTS interviewer_email VARCHAR(255),
         ADD FOREIGN KEY (position_id) REFERENCES positions(id) ON DELETE SET NULL
-    `, (err) => {
-        if (err) console.error('Error altering candidates table:', err);
-    });
+    `, (err) => { if (err) console.error('Error altering candidates table:', err); });
 });
 
 app.post('/api/evaluations', (req, res) => {
     const { name, email, positionId, scores, comments, averageScore, interviewerEmail } = req.body;
+    if (!authenticated || !positionId) { // Simplified check, adjust as needed
+        return res.status(403).json({ error: 'Unauthorized or invalid position' });
+    }
     const scoresJson = JSON.stringify(scores);
-
     const query = 'INSERT INTO candidates (name, email, position_id, scores, comments, average_score, interviewer_email) VALUES (?, ?, ?, ?, ?, ?, ?)';
     db.query(query, [name, email, positionId, scoresJson, comments, parseFloat(averageScore), interviewerEmail], (err, result) => {
         if (err) {

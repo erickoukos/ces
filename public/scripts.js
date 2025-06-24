@@ -69,13 +69,18 @@ async function createPosition() {
     const qualifications = document.getElementById('position-qualifications').value;
     const requirements = document.getElementById('position-requirements').value;
     const duties = document.getElementById('position-duties').value;
+    const totalMarks = document.getElementById('position-total-marks').value;
 
-    if (!title || !description || !qualifications || !requirements || !duties) {
+    if (!title || !description || !qualifications || !requirements || !duties || !totalMarks) {
         alert('All fields are required.');
         return;
     }
+    if (totalMarks < 10 || totalMarks > 100) {
+        alert('Total marks must be between 10 and 100.');
+        return;
+    }
 
-    const position = { title, description, qualifications, requirements, duties };
+    const position = { title, description, qualifications, requirements, duties, totalMarks: parseInt(totalMarks), email: interviewerEmail };
 
     try {
         const response = await fetch('/api/positions', {
@@ -91,9 +96,11 @@ async function createPosition() {
             document.getElementById('position-qualifications').value = '';
             document.getElementById('position-requirements').value = '';
             document.getElementById('position-duties').value = '';
+            document.getElementById('position-total-marks').value = '';
             loadPositions();
         } else {
-            alert('Error creating position.');
+            const data = await response.json();
+            alert(data.error || 'Error creating position.');
         }
     } catch (error) {
         console.error('Error creating position:', error);
@@ -145,7 +152,7 @@ async function submitEvaluation() {
     const questionScores = Array.from(document.querySelectorAll('#questions-container .score')).map(input => parseInt(input.value) || 0);
     const criteriaScores = Array.from(document.querySelectorAll('#additional-criteria .score')).map(input => parseInt(input.value) || 0);
     const totalScore = [...questionScores, ...criteriaScores].reduce((sum, score) => sum + score, 0);
-    const averageScore = (totalScore / 50 * 100).toFixed(2);
+    const averageScore = (totalScore / 50 * 100).toFixed(2); // Adjust denominator based on position total_marks
 
     const evaluation = {
         name,
@@ -169,7 +176,8 @@ async function submitEvaluation() {
             fetchCandidates();
             clearForm();
         } else {
-            alert('Error submitting evaluation.');
+            const data = await response.json();
+            alert(data.error || 'Error submitting evaluation.');
         }
     } catch (error) {
         console.error('Error submitting evaluation:', error);
@@ -190,6 +198,10 @@ async function submitQuestion() {
         alert('Please fill in all question details.');
         return;
     }
+    if (marks < 1 || marks > 10) {
+        alert('Marks must be between 1 and 10.');
+        return;
+    }
 
     const question = { positionId, text, marks: parseInt(marks), email: interviewerEmail };
 
@@ -206,7 +218,10 @@ async function submitQuestion() {
             document.getElementById('new-question-marks').value = '';
             loadQuestions();
         } else {
-            alert('Error adding question.');
+            const data = await response.json();
+            document.getElementById('marks-warning').style.display = 'block';
+            alert(data.error || 'Error adding question.');
+            setTimeout(() => document.getElementById('marks-warning').style.display = 'none', 3000);
         }
     } catch (error) {
         console.error('Error submitting question:', error);
