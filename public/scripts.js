@@ -1,18 +1,116 @@
-let questionsData = [];
+let questionsData = {};
+let authenticated = false;
+let interviewerEmail = '';
+let userRole = '';
 
 document.getElementById('candidate-position').addEventListener('change', loadQuestions);
 
+async function loginInterviewer() {
+    const email = document.getElementById('interviewer-email').value;
+    const password = document.getElementById('interviewer-password').value;
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            interviewerEmail = data.email;
+            userRole = data.role;
+            authenticated = true;
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('evaluation-section').style.display = 'block';
+            document.getElementById('questions-scores-section').style.display = 'block';
+            document.getElementById('results').style.display = 'block';
+            if (userRole === 'admin') {
+                document.getElementById('position-management-section').style.display = 'block';
+                document.getElementById('question-submission-section').style.display = 'block';
+            }
+            loadPositions();
+            alert('Login successful!');
+        } else {
+            alert(data.error || 'Login failed');
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        alert('Login failed');
+    }
+}
+
+async function loadPositions() {
+    try {
+        const response = await fetch('/api/positions');
+        const positions = await response.json();
+        const positionSelects = [document.getElementById('candidate-position'), document.getElementById('new-question-position')];
+        positionSelects.forEach(select => {
+            select.innerHTML = '<option value="" disabled selected>Select Position</option>';
+            positions.forEach(pos => {
+                const option = document.createElement('option');
+                option.value = pos.id;
+                option.textContent = pos.title;
+                select.appendChild(option);
+            });
+        });
+    } catch (error) {
+        console.error('Error loading positions:', error);
+    }
+}
+
+async function createPosition() {
+    if (userRole !== 'admin') {
+        alert('Only admins can create positions.');
+        return;
+    }
+
+    const title = document.getElementById('position-title').value;
+    const description = document.getElementById('position-description').value;
+    const qualifications = document.getElementById('position-qualifications').value;
+    const requirements = document.getElementById('position-requirements').value;
+    const duties = document.getElementById('position-duties').value;
+
+    if (!title || !description || !qualifications || !requirements || !duties) {
+        alert('All fields are required.');
+        return;
+    }
+
+    const position = { title, description, qualifications, requirements, duties };
+
+    try {
+        const response = await fetch('/api/positions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(position)
+        });
+
+        if (response.ok) {
+            alert('Position created successfully!');
+            document.getElementById('position-title').value = '';
+            document.getElementById('position-description').value = '';
+            document.getElementById('position-qualifications').value = '';
+            document.getElementById('position-requirements').value = '';
+            document.getElementById('position-duties').value = '';
+            loadPositions();
+        } else {
+            alert('Error creating position.');
+        }
+    } catch (error) {
+        console.error('Error creating position:', error);
+    }
+}
+
 async function loadQuestions() {
-    const position = document.getElementById('candidate-position').value;
+    const positionId = document.getElementById('candidate-position').value;
     const questionsContainer = document.getElementById('questions-container');
     questionsContainer.innerHTML = '';
 
-    if (!position) return;
+    if (!positionId || !authenticated) return;
 
     try {
-        const response = await fetch('/static/questions.json');
-        questionsData = await response.json();
-        const questions = questionsData[position] || [];
+        const response = await fetch(`/api/questions/${positionId}`);
+        questionsData[positionId] = await response.json();
+        const questions = questionsData[positionId] || [];
 
         questions.forEach((q, index) => {
             const div = document.createElement('div');
@@ -29,12 +127,17 @@ async function loadQuestions() {
 }
 
 async function submitEvaluation() {
+    if (!authenticated) {
+        alert('Please log in first.');
+        return;
+    }
+
     const name = document.getElementById('candidate-name').value;
     const email = document.getElementById('candidate-email').value;
-    const position = document.getElementById('candidate-position').value;
+    const positionId = document.getElementById('candidate-position').value;
     const comments = document.getElementById('comments').value;
 
-    if (!name || !email || !position) {
+    if (!name || !email || !positionId) {
         alert('Please fill in all candidate details.');
         return;
     }
@@ -47,10 +150,11 @@ async function submitEvaluation() {
     const evaluation = {
         name,
         email,
-        position,
+        positionId,
         scores: [...questionScores, ...criteriaScores],
         comments,
-        averageScore
+        averageScore,
+        interviewerEmail
     };
 
     try {
@@ -69,6 +173,43 @@ async function submitEvaluation() {
         }
     } catch (error) {
         console.error('Error submitting evaluation:', error);
+    }
+}
+
+async function submitQuestion() {
+    if (userRole !== 'admin') {
+        alert('Only admins can add questions.');
+        return;
+    }
+
+    const positionId = document.getElementById('new-question-position').value;
+    const text = document.getElementById('new-question-text').value;
+    const marks = document.getElementById('new-question-marks').value;
+
+    if (!positionId || !text || !marks) {
+        alert('Please fill in all question details.');
+        return;
+    }
+
+    const question = { positionId, text, marks: parseInt(marks), email: interviewerEmail };
+
+    try {
+        const response = await fetch('/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(question)
+        });
+
+        if (response.ok) {
+            alert('Question added successfully!');
+            document.getElementById('new-question-text').value = '';
+            document.getElementById('new-question-marks').value = '';
+            loadQuestions();
+        } else {
+            alert('Error adding question.');
+        }
+    } catch (error) {
+        console.error('Error submitting question:', error);
     }
 }
 

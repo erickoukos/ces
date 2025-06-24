@@ -26,5 +26,17 @@
         { "text": "How do you ensure strong client relationships to meet their digital marketing objectives?", "marks": 4 },
         { "text": "What key performance indicators do you track to measure the success of digital marketing initiatives?", "marks": 4 },
         { "text": "Share a time when data-driven insights prompted you to pivot a digital marketing strategy. What was the result?", "marks": 5 }
-    ]
+    ],
+    "Graphic Designer": [
+    { "text": "Describe your experience with Adobe Illustrator.", "marks": 4 },
+    { "text": "How do you ensure brand consistency?", "marks": 4 },
+    { "text": "Share a design project example.", "marks": 5 },
+    { "text": "How do you meet campaign deadlines?", "marks": 5 },
+    { "text": "What tools do you use for prototyping?", "marks": 4 },
+    { "text": "How do you handle client feedback?", "marks": 4 },
+    { "text": "Describe a challenging design project.", "marks": 5 },
+    { "text": "How do you stay updated with design trends?", "marks": 4 },
+    { "text": "What is your approach to typography?", "marks": 4 },
+    { "text": "How do you optimize designs for digital?", "marks": 4 }
+]
 }

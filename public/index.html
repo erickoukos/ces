@@ -4,27 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Candidate Evaluation System</title>
-    <link href="/static/style.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="container">
         <h1 class="text-center">Candidate Evaluation System</h1>
 
-        <!-- Form for Candidate Details and Scores -->
-        <section classazienda-details">
+        <!-- Authentication Section -->
+        <section class="auth-section" id="auth-section">
+            <h2>Interviewer Login</h2>
+            <div class="grid">
+                <input id="interviewer-email" type="email" placeholder="Interviewer Email" class="input-field">
+                <input id="interviewer-password" type="password" placeholder="Password" class="input-field">
+                <button onclick="loginInterviewer()" class="submit-btn">Login</button>
+            </div>
+        </section>
+
+        <!-- Position Management (Admin Only) -->
+        <section class="position-management" id="position-management-section" style="display: none;">
+            <h2>Create New Position</h2>
+            <div class="grid">
+                <input id="position-title" type="text" placeholder="Position Title" class="input-field">
+                <textarea id="position-description" placeholder="Description" class="input-field"></textarea>
+                <textarea id="position-qualifications" placeholder="Qualifications" class="input-field"></textarea>
+                <textarea id="position-requirements" placeholder="Requirements" class="input-field"></textarea>
+                <textarea id="position-duties" placeholder="Duties" class="input-field"></textarea>
+                <button onclick="createPosition()" class="submit-btn">Create Position</button>
+            </div>
+        </section>
+
+        <!-- Question Submission (Admin Only) -->
+        <section class="question-submission" id="question-submission-section" style="display: none;">
+            <h2>Add New Question</h2>
+            <div class="grid">
+                <select id="new-question-position" class="input-field"></select>
+                <input id="new-question-text" type="text" placeholder="Question Text" class="input-field">
+                <input id="new-question-marks" type="number" min="1" max="5" placeholder="Marks (1-5)" class="input-field">
+                <button onclick="submitQuestion()" class="submit-btn">Add Question</button>
+            </div>
+        </section>
+
+        <!-- Candidate Evaluation Form -->
+        <section class="candidate-details" id="evaluation-section" style="display: none;">
             <h2>Enter Candidate Details</h2>
             <div class="grid">
                 <input id="candidate-name" type="text" placeholder="Candidate Name" class="input-field">
                 <input id="candidate-email" type="email" placeholder="Candidate Email" class="input-field">
-                <select id="candidate-position" class="input-field">
-                    <option value="" disabled selected>Select Position</option>
-                    <option value="Photographer">Photographer</option>
-                    <option value="Digital Marketing Manager">Digital Marketing Manager</option>
-                </select>
+                <select id="candidate-position" class="input-field"></select>
             </div>
         </section>
 
-        <section class="questions-scores">
+        <section class="questions-scores" id="questions-scores-section" style="display: none;">
             <h2>Interview Questions and Scores</h2>
             <div id="questions-container" class="questions-list"></div>
             <div id="additional-criteria" class="criteria-list">
@@ -57,7 +87,7 @@
         </section>
 
         <!-- Results Section -->
-        <section id="results" class="results">
+        <section id="results" class="results" style="display: none;">
             <h2>Candidate Rankings</h2>
             <div id="candidate-list" class="candidate-list"></div>
         </section>
